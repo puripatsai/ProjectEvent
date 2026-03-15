@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ลงทะเบียน</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: #f0f4f8;
+            color: #333;
+        }
+
+        nav {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        nav .logo { color: white; font-size: 22px; font-weight: 700; }
+        nav .logo span { color: #FFD700; }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 24px;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        nav a:hover { color: #FFD700; }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* EVENT INFO */
+        .event-info {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: white;
+            border-radius: 16px;
+            padding: 28px;
+            height: fit-content;
+        }
+        .event-info h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 12px;
+        }
+        .event-info .badge {
+            background: #FFD700;
+            color: #1a237e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+        .event-info .detail {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .progress-wrap { margin-top: 20px; }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 8px;
+            opacity: 0.85;
+        }
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            height: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: #FFD700;
+        }
+        .progress-fill.full { background: #ef5350; }
+
+        /* FORM */
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .form-header {
+            background: #f5f5f5;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .form-header h2 { font-size: 18px; font-weight: 700; color: #1a237e; }
+        .form-body { padding: 24px; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 6px;
+        }
+        .form-group label span { color: #e53935; }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus { border-color: #1a237e; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: opacity 0.2s;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+
+        .alert {
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            display: none;
+        }
+        .alert.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+            display: block;
+        }
+        .alert.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+            display: block;
+        }
+
+        /* PARTICIPANTS TABLE */
+        .participants-wrap {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .participants-header {
+            background: #f5f5f5;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .participants-header h2 { font-size: 18px; font-weight: 700; color: #1a237e; }
+        .count-badge {
+            background: #1a237e;
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #e8eaf6;
+            color: #1a237e;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        tr:hover td { background: #fafafa; }
+
+        .btn-cancel {
+            background: #ffebee;
+            color: #c62828;
+            border: none;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-family: 'Kanit', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .btn-cancel:hover { background: #ffcdd2; }
+
+        .empty-table {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-size: 15px;
+        }
+
+        @media (max-width: 700px) {
+            .container { grid-template-columns: 1fr; }
+            .participants-wrap { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">🏆 <span>UniSports</span></div>
+    <div>
+        <a href="index.html">หน้าแรก</a>
+        <a href="create.html">สร้างกิจกรรม</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- ข้อมูลกิจกรรม -->
+    <div class="event-info" id="eventInfo">
+        <p>กำลังโหลด...</p>
+    </div>
+
+    <!-- ฟอร์มลงทะเบียน -->
+    <div class="form-card">
+        <div class="form-header">
+            <h2>📋 ลงทะเบียนเข้าร่วม</h2>
+        </div>
+        <div class="form-body">
+            <div class="alert" id="alert"></div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ชื่อ <span>*</span></label>
+                    <input type="text" id="first_name" placeholder="ชื่อจริง">
+                </div>
+                <div class="form-group">
+                    <label>นามสกุล <span>*</span></label>
+                    <input type="text" id="last_name" placeholder="นามสกุล">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>รหัสนักศึกษา <span>*</span></label>
+                <input type="text" id="student_id" placeholder="เช่น 6401234567">
+            </div>
+
+            <div class="form-group">
+                <label>คณะ <span>*</span></label>
+                <select id="faculty">
+                    <option value="">-- เลือกคณะ --</option>
+                    <option>วิศวกรรมศาสตร์</option>
+                    <option>วิทยาศาสตร์</option>
+                    <option>บริหารธุรกิจ</option>
+                    <option>นิติศาสตร์</option>
+                    <option>แพทยศาสตร์</option>
+                    <option>อักษรศาสตร์</option>
+                    <option>เศรษฐศาสตร์</option>
+                    <option>สถาปัตยกรรมศาสตร์</option>
+                    <option>ครุศาสตร์</option>
+                    <option>อื่นๆ</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>เบอร์โทรศัพท์</label>
+                <input type="tel" id="phone" placeholder="เช่น 0812345678">
+            </div>
+
+            <button class="btn-submit" onclick="register()">✅ ยืนยันลงทะเบียน</button>
+        </div>
+    </div>
+
+    <!-- ตารางรายชื่อ -->
+    <div class="participants-wrap">
+        <div class="participants-header">
+            <h2>👥 รายชื่อผู้เข้าร่วม</h2>
+            <span class="count-badge" id="countBadge">0 คน</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>ชื่อ-นามสกุล</th>
+                    <th>รหัสนักศึกษา</th>
+                    <th>คณะ</th>
+                    <th>เบอร์โทร</th>
+                    <th>ยกเลิก</th>
+                </tr>
+            </thead>
+            <tbody id="participantList">
+                <tr><td colspan="6" class="empty-table">ยังไม่มีผู้ลงทะเบียน</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    const API = 'http://localhost:8000';
+    const params = new URLSearchParams(window.location.search);
+    const eventId = params.get('id');
+
+    if (!eventId) window.location.href = 'index.html';
+
+    async function loadEvent() {
+        try {
+            const res = await fetch(`${API}/events/${eventId}`);
+            const e = await res.json();
+            const isFull = e.current_participants >= e.max_participants;
+            const percent = Math.round((e.current_participants / e.max_participants) * 100);
+            const date = new Date(e.event_date).toLocaleDateString('th-TH', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+
+            document.getElementById('eventInfo').innerHTML = `
+                <div class="badge">⚽ ${e.sport_type}</div>
+                <h3>${e.title}</h3>
+                <div class="detail"><span>📅</span><span>${date}</span></div>
+                <div class="detail"><span>📍</span><span>${e.location}</span></div>
+                <div class="detail"><span>📝</span><span>${e.description || '-'}</span></div>
+                <div class="progress-wrap">
+                    <div class="progress-label">
+                        <span>ผู้เข้าร่วม</span>
+                        <span>${e.current_participants}/${e.max_participants} คน</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${isFull ? 'full' : ''}" style="width:${percent}%"></div>
+                    </div>
+                </div>
+            `;
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function loadParticipants() {
+        try {
+            const res = await fetch(`${API}/events/${eventId}/participants`);
+            const list = await res.json();
+            const tbody = document.getElementById('participantList');
+            document.getElementById('countBadge').textContent = `${list.length} คน`;
+
+            if (list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-table">ยังไม่มีผู้ลงทะเบียน</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map((p, i) => `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td>${p.first_name} ${p.last_name}</td>
+                    <td>${p.student_id}</td>
+                    <td>${p.faculty}</td>
+                    <td>${p.phone || '-'}</td>
+                    <td><button class="btn-cancel" onclick="cancelReg(${p.id})">ยกเลิก</button></td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function register() {
+        const alertBox = document.getElementById('alert');
+        alertBox.className = 'alert';
+
+        const data = {
+            first_name: document.getElementById('first_name').value.trim(),
+            last_name: document.getElementById('last_name').value.trim(),
+            student_id: document.getElementById('student_id').value.trim(),
+            faculty: document.getElementById('faculty').value,
+            phone: document.getElementById('phone').value.trim()
+        };
+
+        try {
+            const res = await fetch(`${API}/events/${eventId}/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                alertBox.className = 'alert error';
+                alertBox.textContent = result.errors ? result.errors.join(', ') : result.message;
+                return;
+            }
+
+            alertBox.className = 'alert success';
+            alertBox.textContent = '✅ ลงทะเบียนสำเร็จ!';
+
+            // เคลียร์ฟอร์ม
+            ['first_name','last_name','student_id','phone'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            document.getElementById('faculty').value = '';
+
+            // โหลดข้อมูลใหม่
+            loadEvent();
+            loadParticipants();
+
+        } catch (err) {
+            alertBox.className = 'alert error';
+            alertBox.textContent = 'เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อ Server ได้';
+        }
+    }
+
+    async function cancelReg(id) {
+        if (!confirm('ยืนยันการยกเลิกการลงทะเบียน?')) return;
+
+        try {
+            const res = await fetch(`${API}/registrations/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                loadEvent();
+                loadParticipants();
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    loadEvent();
+    loadParticipants();
+</script>
+
+</body>
+</html>
