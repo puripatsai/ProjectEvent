@@ -2,6 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const SECRET = 'unisports_secret_key';
 
 const app = express();
 const port = 8000;
@@ -17,12 +20,13 @@ const initMySQL = async () => {
         user: 'root',
         password: 'root',
         database: 'sportsdb',
-        port: 3306
+        port: 3307
     });
     console.log('✅ Connected to MySQL');
 };
 
-// GET /events
+// ========== EVENTS ==========
+
 app.get('/events', async (req, res) => {
     try {
         const [results] = await conn.query(`
@@ -38,7 +42,6 @@ app.get('/events', async (req, res) => {
     }
 });
 
-// GET /events/:id
 app.get('/events/:id', async (req, res) => {
     try {
         const [results] = await conn.query(`
@@ -56,7 +59,6 @@ app.get('/events/:id', async (req, res) => {
     }
 });
 
-// POST /events
 app.post('/events', async (req, res) => {
     try {
         const { title, description, sport_type, event_date, location, max_participants } = req.body;
@@ -81,7 +83,6 @@ app.post('/events', async (req, res) => {
     }
 });
 
-// DELETE /events/:id
 app.delete('/events/:id', async (req, res) => {
     try {
         const [result] = await conn.query('DELETE FROM events WHERE id = ?', [req.params.id]);
@@ -92,7 +93,8 @@ app.delete('/events/:id', async (req, res) => {
     }
 });
 
-// GET /events/:id/participants
+// ========== REGISTRATIONS ==========
+
 app.get('/events/:id/participants', async (req, res) => {
     try {
         const [results] = await conn.query(
@@ -105,7 +107,6 @@ app.get('/events/:id/participants', async (req, res) => {
     }
 });
 
-// POST /events/:id/register
 app.post('/events/:id/register', async (req, res) => {
     try {
         const eventId = req.params.id;
@@ -147,7 +148,6 @@ app.post('/events/:id/register', async (req, res) => {
     }
 });
 
-// DELETE /registrations/:id
 app.delete('/registrations/:id', async (req, res) => {
     try {
         const [result] = await conn.query('DELETE FROM registrations WHERE id = ?', [req.params.id]);
@@ -157,6 +157,81 @@ app.delete('/registrations/:id', async (req, res) => {
         res.status(500).json({ message: 'Error cancelling', error: error.message });
     }
 });
+
+// ========== AUTH ==========
+
+app.post('/register', async (req, res) => {
+    try {
+        const { student_id, password, first_name, last_name, year, faculty, major } = req.body;
+
+        const errors = [];
+        if (!student_id)  errors.push('กรุณากรอกรหัสนิสิต');
+        if (!password)    errors.push('กรุณากรอกรหัสผ่าน');
+        if (!first_name)  errors.push('กรุณากรอกชื่อ');
+        if (!last_name)   errors.push('กรุณากรอกนามสกุล');
+        if (!year)        errors.push('กรุณากรอกชั้นปี');
+        if (!faculty)     errors.push('กรุณาระบุคณะ');
+        if (!major)       errors.push('กรุณาระบุสาขา');
+
+        if (errors.length > 0) return res.status(400).json({ message: 'ข้อมูลไม่ครบ', errors });
+
+        const [dup] = await conn.query('SELECT id FROM users WHERE student_id = ?', [student_id]);
+        if (dup.length > 0) return res.status(400).json({ message: 'รหัสนิสิตนี้มีอยู่แล้ว' });
+
+        const hashed = await bcrypt.hash(password, 10);
+
+        await conn.query('INSERT INTO users SET ?', {
+            student_id, password: hashed, first_name, last_name,
+            year: parseInt(year), faculty, major
+        });
+
+        res.status(201).json({ message: 'สมัครสมาชิกสำเร็จ' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error', error: error.message });
+    }
+});
+
+app.post('/login', async (req, res) => {
+    try {
+        const { student_id, password } = req.body;
+
+        if (!student_id || !password) {
+            return res.status(400).json({ message: 'กรุณากรอกรหัสนิสิตและรหัสผ่าน' });
+        }
+
+        const [rows] = await conn.query('SELECT * FROM users WHERE student_id = ?', [student_id]);
+        if (rows.length === 0) return res.status(401).json({ message: 'ไม่พบรหัสนิสิตนี้' });
+
+        const user = rows[0];
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) return res.status(401).json({ message: 'รหัสผ่านไม่ถูกต้อง' });
+
+        const token = jwt.sign(
+            { id: user.id, student_id: user.student_id, first_name: user.first_name },
+            SECRET,
+            { expiresIn: '24h' }
+        );
+
+        res.json({
+            message: 'เข้าสู่ระบบสำเร็จ',
+            token,
+            user: {
+                id: user.id,
+                student_id: user.student_id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                faculty: user.faculty,
+                major: user.major,
+                year: user.year,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error', error: error.message });
+    }
+});
+
+// ========== START ==========
 
 app.listen(port, async () => {
     await initMySQL();

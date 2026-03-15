@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="login-body">
+<div class="login-card">
+    <div class="login-header">
+        <div class="icon">🏆</div>
+        <h2>UniSports</h2>
+        <p>ระบบจัดการกิจกรรมกีฬามหาวิทยาลัย</p>
+    </div>
+    <div style="padding:32px;">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">เข้าสู่ระบบ</div>
+            <div class="tab" onclick="switchTab('register')">สมัครสมาชิก</div>
+        </div>
+        <div class="alert" id="alert"></div>
+        <div id="loginForm">
+            <div class="form-group">
+                <label>รหัสนิสิต <span>*</span></label>
+                <input type="text" id="login_student_id" placeholder="เช่น 6401234567">
+            </div>
+            <div class="form-group">
+                <label>รหัสผ่าน <span>*</span></label>
+                <input type="password" id="login_password" placeholder="รหัสผ่าน">
+            </div>
+            <button class="btn-submit" onclick="login()">🔑 เข้าสู่ระบบ</button>
+        </div>
+        <div id="registerForm" class="hidden">
+            <div class="form-group">
+                <label>รหัสนิสิต <span>*</span></label>
+                <input type="text" id="reg_student_id" placeholder="เช่น 6401234567">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ชื่อ <span>*</span></label>
+                    <input type="text" id="reg_first_name" placeholder="ชื่อจริง">
+                </div>
+                <div class="form-group">
+                    <label>นามสกุล <span>*</span></label>
+                    <input type="text" id="reg_last_name" placeholder="นามสกุล">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ชั้นปี <span>*</span></label>
+                    <select id="reg_year">
+                        <option value="">-- ชั้นปี --</option>
+                        <option value="1">ปี 1</option>
+                        <option value="2">ปี 2</option>
+                        <option value="3">ปี 3</option>
+                        <option value="4">ปี 4</option>
+                        <option value="5">ปี 5</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>คณะ <span>*</span></label>
+                    <select id="reg_faculty">
+                        <option value="">-- คณะ --</option>
+                        <option>วิศวกรรมศาสตร์</option>
+                        <option>วิทยาศาสตร์</option>
+                        <option>บริหารธุรกิจ</option>
+                        <option>นิติศาสตร์</option>
+                        <option>แพทยศาสตร์</option>
+                        <option>อักษรศาสตร์</option>
+                        <option>เศรษฐศาสตร์</option>
+                        <option>ครุศาสตร์</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>สาขาวิชา <span>*</span></label>
+                <input type="text" id="reg_major" placeholder="เช่น วิศวกรรมคอมพิวเตอร์">
+            </div>
+            <div class="form-group">
+                <label>รหัสผ่าน <span>*</span></label>
+                <input type="password" id="reg_password" placeholder="ตั้งรหัสผ่าน">
+            </div>
+            <button class="btn-submit" onclick="registerUser()">✅ สมัครสมาชิก</button>
+        </div>
+    </div>
+</div>
+<script src="js/login.js"></script>
+</body>
+</html>
