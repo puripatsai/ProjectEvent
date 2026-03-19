@@ -1,48 +1,65 @@
+// =================================================================
+//  create.js — สร้างกิจกรรมใหม่ (Admin only)
+//  API  : POST /events → { id, message }
+// =================================================================
+
 const API = 'http://localhost:8000';
 
-// NAVBAR
+/* ── Navbar ───────────────────────────────────────────────────── */
 const user = JSON.parse(localStorage.getItem('user'));
 if (user) {
-    document.getElementById('navUser').textContent = `👤 ${user.first_name} ${user.last_name}`;
-    document.getElementById('navLogin').style.display = 'none';
-    document.getElementById('navLogout').style.display = 'inline';
+  const initial = user.first_name ? user.first_name.charAt(0).toUpperCase() : 'U';
+  document.getElementById('navUser').textContent = initial;
+  document.getElementById('navUser').classList.remove('hidden');
+  document.getElementById('btnLogout').classList.remove('hidden');
+  document.getElementById('btnLogin').classList.add('hidden');
 }
 function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = 'login.html';
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  window.location.href = 'login.html';
 }
 
-async function createEvent() {
-    const alertBox = document.getElementById('alert');
-    alertBox.className = 'alert';
+/* ── Alert helper ─────────────────────────────────────────────── */
+function showAlert(msg, type) {
+  const el = document.getElementById('formAlert');
+  el.className = `form-alert ${type}`;
+  el.innerHTML = `<span>${msg}</span>`;
+}
 
-    const data = {
-        title: document.getElementById('title').value.trim(),
-        sport_type: document.getElementById('sport_type').value,
-        event_date: document.getElementById('event_date').value,
-        location: document.getElementById('location').value.trim(),
-        max_participants: document.getElementById('max_participants').value,
-        description: document.getElementById('description').value.trim()
-    };
+/* ── Submit (ชื่อต่างจาก createEvent เพื่อไม่ชน browser built-in) */
+async function submitCreateEvent() {
+  const data = {
+    title           : document.getElementById('title').value.trim(),
+    sport_type      : document.getElementById('sport_type').value,
+    event_date      : document.getElementById('event_date').value,
+    location        : document.getElementById('location').value.trim(),
+    max_participants: document.getElementById('max_participants').value,
+    description     : document.getElementById('description').value.trim()
+  };
 
-    try {
-        const res = await fetch(`${API}/events`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        const result = await res.json();
-        if (!res.ok) {
-            alertBox.className = 'alert error';
-            alertBox.textContent = result.errors ? result.errors.join(', ') : result.message;
-            return;
-        }
-        alertBox.className = 'alert success';
-        alertBox.textContent = '✅ สร้างกิจกรรมสำเร็จ! กำลังกลับหน้าหลัก...';
-        setTimeout(() => window.location.href = 'index.html', 1500);
-    } catch (err) {
-        alertBox.className = 'alert error';
-        alertBox.textContent = 'เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อ Server ได้';
+  // validation เบื้องต้น
+  if (!data.title || !data.sport_type || !data.event_date || !data.location || !data.max_participants) {
+    showAlert('โปรดกรอกข้อมูลสำคัญให้ครบถ้วน', 'error');
+    return;
+  }
+
+  try {
+    const res    = await fetch(`${API}/events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+
+    if (!res.ok) {
+      showAlert(result.errors ? result.errors.join(', ') : result.message, 'error');
+      return;
     }
+
+    showAlert('สร้างกิจกรรมสำเร็จ! กำลังกลับหน้าหลัก...', 'success');
+    setTimeout(() => window.location.href = 'index.html', 1400);
+  } catch (err) {
+    showAlert('เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อ Server ได้', 'error');
+  }
 }

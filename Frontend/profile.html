@@ -1,392 +1,61 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรไฟล์</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Kanit', sans-serif;
-            background: #f0f4f8;
-            color: #333;
-        }
-
-        nav {
-            background: linear-gradient(135deg, #1a237e, #283593);
-            padding: 0 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            height: 64px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        nav .logo { color: white; font-size: 22px; font-weight: 700; text-decoration: none; }
-        nav .logo span { color: #FFD700; }
-        .nav-right { display: flex; align-items: center; gap: 8px; }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 500;
-            padding: 8px 14px;
-            border-radius: 8px;
-            transition: background 0.2s;
-        }
-        nav a:hover { background: rgba(255,255,255,0.15); }
-        .nav-user { color: #FFD700; font-size: 14px; font-weight: 600; padding: 8px 14px; }
-        .btn-logout {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-family: 'Kanit', sans-serif;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .btn-logout:hover { background: rgba(255,0,0,0.3); }
-
-        .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        /* PROFILE CARD */
-        .profile-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-            margin-bottom: 32px;
-        }
-        .profile-header {
-            background: linear-gradient(135deg, #1a237e, #3949ab);
-            padding: 40px;
-            display: flex;
-            align-items: center;
-            gap: 28px;
-            color: white;
-        }
-        .avatar {
-            width: 90px;
-            height: 90px;
-            background: #FFD700;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            font-weight: 700;
-            color: #1a237e;
-            flex-shrink: 0;
-        }
-        .profile-info h2 { font-size: 26px; font-weight: 700; }
-        .profile-info p { opacity: 0.8; font-size: 15px; margin-top: 4px; }
-        .role-badge {
-            display: inline-block;
-            background: #FFD700;
-            color: #1a237e;
-            padding: 4px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            margin-top: 8px;
-        }
-
-        .profile-body {
-            padding: 32px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        .info-item label {
-            display: block;
-            font-size: 12px;
-            font-weight: 700;
-            color: #888;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-        .info-item p {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        /* SECTION */
-        .section-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1a237e;
-            border-left: 5px solid #FFD700;
-            padding-left: 12px;
-            margin-bottom: 20px;
-        }
-
-        /* EVENT CARDS */
-        .event-list { display: flex; flex-direction: column; gap: 16px; }
-        .event-item {
-            background: white;
-            border-radius: 14px;
-            padding: 20px 24px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 16px;
-        }
-        .event-item-left { flex: 1; }
-        .event-item-left .sport-badge {
-            background: #e8eaf6;
-            color: #1a237e;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 700;
-            display: inline-block;
-            margin-bottom: 6px;
-        }
-        .event-item-left h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-        .event-item-left .meta {
-            display: flex;
-            gap: 16px;
-            font-size: 13px;
-            color: #666;
-        }
-        .event-item-right { flex-shrink: 0; }
-
-        .btn-cancel {
-            background: #ffebee;
-            color: #c62828;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-family: 'Kanit', sans-serif;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-cancel:hover { background: #ffcdd2; }
-
-        .registered-date {
-            font-size: 12px;
-            color: #aaa;
-            margin-top: 4px;
-            text-align: right;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 48px;
-            color: #aaa;
-            font-size: 16px;
-            background: white;
-            border-radius: 14px;
-        }
-
-        /* STATS */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 14px;
-            padding: 24px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-        }
-        .stat-card .number {
-            font-size: 36px;
-            font-weight: 700;
-            color: #1a237e;
-        }
-        .stat-card .label {
-            font-size: 13px;
-            color: #888;
-            margin-top: 4px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โปรไฟล์ | UniSports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<nav>
-    <a href="index.html" class="logo">🏆 <span>UniSports</span></a>
-    <div class="nav-right">
-        <a href="index.html">หน้าแรก</a>
-        <span class="nav-user" id="navUser"></span>
-        <button class="btn-logout" onclick="logout()">ออกจากระบบ</button>
+  <!-- ── Navbar ─────────────────────────────────────────────── -->
+  <nav>
+    <a href="index.html" class="logo">UniSports.</a>
+    <div class="nav-actions">
+      <a href="index.html" class="nav-link">หน้าแรก</a>
+      <a href="profile.html" class="user-avatar" id="navUser" title="โปรไฟล์"></a>
+      <button class="btn-logout" id="btnLogout" onclick="logout()">ออกจากระบบ</button>
     </div>
-</nav>
+  </nav>
 
-<div class="container">
+  <!-- ── Profile Page ───────────────────────────────────────── -->
+  <div class="profile-page">
 
-    <!-- PROFILE CARD -->
+    <!-- Profile Card -->
     <div class="profile-card">
-        <div class="profile-header">
-            <div class="avatar" id="avatarText">?</div>
-            <div class="profile-info">
-                <h2 id="fullName">กำลังโหลด...</h2>
-                <p id="studentId"></p>
-                <div class="role-badge" id="roleBadge"></div>
-            </div>
+      <div class="profile-header">
+        <!-- Avatar วงกลม SVG user icon -->
+        <div class="profile-avatar" id="avatarEl"></div>
+        <div>
+          <div class="profile-name" id="profileName">กำลังโหลด...</div>
+          <div class="profile-id"   id="profileId"></div>
+          <div class="role-badge"   id="roleBadge"></div>
         </div>
-        <div class="profile-body">
-            <div class="info-item">
-                <label>คณะ</label>
-                <p id="faculty">-</p>
-            </div>
-            <div class="info-item">
-                <label>สาขาวิชา</label>
-                <p id="major">-</p>
-            </div>
-            <div class="info-item">
-                <label>ชั้นปี</label>
-                <p id="year">-</p>
-            </div>
-            <div class="info-item">
-                <label>รหัสนิสิต</label>
-                <p id="studentIdDetail">-</p>
-            </div>
-        </div>
+      </div>
+      <div class="profile-body">
+        <div class="info-item"><label>คณะ</label>      <p id="infoFaculty">-</p></div>
+        <div class="info-item"><label>สาขาวิชา</label> <p id="infoMajor">-</p></div>
+        <div class="info-item"><label>ชั้นปี</label>   <p id="infoYear">-</p></div>
+        <div class="info-item"><label>รหัสนิสิต</label><p id="infoStudentId">-</p></div>
+      </div>
     </div>
 
-    <!-- STATS -->
-    <div class="stats">
-        <div class="stat-card">
-            <div class="number" id="statTotal">0</div>
-            <div class="label">กิจกรรมที่ลงทะเบียน</div>
-        </div>
-        <div class="stat-card">
-            <div class="number" id="statUpcoming">0</div>
-            <div class="label">กิจกรรมที่กำลังจะมาถึง</div>
-        </div>
-        <div class="stat-card">
-            <div class="number" id="statPast">0</div>
-            <div class="label">กิจกรรมที่ผ่านมาแล้ว</div>
-        </div>
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="statTotal">0</div>   <div class="stat-label">กิจกรรมที่ลงทะเบียน</div></div>
+      <div class="stat-card"><div class="stat-num" id="statUpcoming">0</div><div class="stat-label">กิจกรรมที่กำลังจะมาถึง</div></div>
+      <div class="stat-card"><div class="stat-num" id="statPast">0</div>    <div class="stat-label">กิจกรรมที่ผ่านมาแล้ว</div></div>
     </div>
 
-    <!-- MY EVENTS -->
-    <div class="section-title">📋 กิจกรรมที่ลงทะเบียนไว้</div>
+    <!-- My Events -->
+    <div class="section-heading">กิจกรรมที่ลงทะเบียนไว้</div>
     <div class="event-list" id="myEvents">
-        <div class="empty">กำลังโหลด...</div>
+      <div class="profile-empty">กำลังโหลด...</div>
     </div>
 
-</div>
+  </div>
 
-<script>
-    const API = 'http://localhost:8000';
-
-    // เช็ค login
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) window.location.href = 'login.html';
-
-    // แสดงข้อมูล profile
-    document.getElementById('navUser').textContent = `👤 ${user.first_name} ${user.last_name}`;
-    document.getElementById('fullName').textContent = `${user.first_name} ${user.last_name}`;
-    document.getElementById('studentId').textContent = `รหัสนิสิต: ${user.student_id}`;
-    document.getElementById('studentIdDetail').textContent = user.student_id;
-    document.getElementById('faculty').textContent = user.faculty;
-    document.getElementById('major').textContent = user.major;
-    document.getElementById('year').textContent = `ปี ${user.year}`;
-    document.getElementById('avatarText').textContent = user.first_name.charAt(0);
-    document.getElementById('roleBadge').textContent = user.role === 'admin' ? '👑 Admin' : '🎓 นักศึกษา';
-
-    function logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = 'login.html';
-    }
-
-    async function loadMyEvents() {
-        try {
-            // ดึงกิจกรรมทั้งหมด
-            const eventsRes = await fetch(`${API}/events`);
-            const events = await eventsRes.json();
-
-            // ดึงการลงทะเบียนของแต่ละกิจกรรม
-            const myRegistrations = [];
-
-            for (const event of events) {
-                const regRes = await fetch(`${API}/events/${event.id}/participants`);
-                const participants = await regRes.json();
-                const mine = participants.find(p => p.student_id === user.student_id);
-                if (mine) {
-                    myRegistrations.push({ ...mine, event });
-                }
-            }
-
-            // STATS
-            const today = new Date();
-            const upcoming = myRegistrations.filter(r => new Date(r.event.event_date) >= today);
-            const past = myRegistrations.filter(r => new Date(r.event.event_date) < today);
-
-            document.getElementById('statTotal').textContent = myRegistrations.length;
-            document.getElementById('statUpcoming').textContent = upcoming.length;
-            document.getElementById('statPast').textContent = past.length;
-
-            // แสดงรายการ
-            const container = document.getElementById('myEvents');
-
-            if (myRegistrations.length === 0) {
-                container.innerHTML = '<div class="empty">ยังไม่ได้ลงทะเบียนกิจกรรมใดเลย<br><br><a href="index.html" style="color:#1a237e;font-weight:700;">ดูกิจกรรมทั้งหมด →</a></div>';
-                return;
-            }
-
-            container.innerHTML = myRegistrations.map(r => {
-                const date = new Date(r.event.event_date).toLocaleDateString('th-TH', {
-                    year: 'numeric', month: 'long', day: 'numeric'
-                });
-                const regDate = new Date(r.registered_at).toLocaleDateString('th-TH', {
-                    year: 'numeric', month: 'short', day: 'numeric'
-                });
-                const isPast = new Date(r.event.event_date) < today;
-
-                return `
-                    <div class="event-item">
-                        <div class="event-item-left">
-                            <span class="sport-badge">${r.event.sport_type}</span>
-                            <h4>${r.event.title}</h4>
-                            <div class="meta">
-                                <span>📅 ${date}</span>
-                                <span>📍 ${r.event.location}</span>
-                            </div>
-                        </div>
-                        <div class="event-item-right">
-                            ${!isPast ? `<button class="btn-cancel" onclick="cancelReg(${r.id})">ยกเลิก</button>` : `<span style="color:#aaa;font-size:13px;">ผ่านไปแล้ว</span>`}
-                            <div class="registered-date">ลงทะเบียน ${regDate}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-        } catch (err) {
-            document.getElementById('myEvents').innerHTML = '<div class="empty">เกิดข้อผิดพลาด ไม่สามารถโหลดข้อมูลได้</div>';
-        }
-    }
-
-    async function cancelReg(id) {
-        if (!confirm('ยืนยันการยกเลิกการลงทะเบียน?')) return;
-        try {
-            const res = await fetch(`${API}/registrations/${id}`, { method: 'DELETE' });
-            if (res.ok) loadMyEvents();
-        } catch (err) {
-            console.error(err);
-        }
-    }
-
-    loadMyEvents();
-</script>
-
+  <script src="js/profile.js"></script>
 </body>
 </html>

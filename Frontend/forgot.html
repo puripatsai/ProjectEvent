@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ลืมรหัสผ่าน | UniSports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .steps { display:flex; justify-content:center; gap:8px; margin-bottom:28px; }
+    .step-dot { width:8px; height:8px; border-radius:50%; background:var(--text-tertiary); transition:all 0.3s; }
+    .step-dot.active { width:24px; border-radius:4px; background:var(--text-primary); }
+    .step-dot.done   { background:#34c759; }
+    .back-link { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:var(--text-secondary); margin-bottom:24px; transition:color 0.2s; }
+    .back-link:hover { color:var(--text-primary); }
+  </style>
+</head>
+<body class="auth-body">
+  <div class="brand-header">
+    <a href="index.html" class="brand-name">UniSports.</a>
+  </div>
+  <div class="auth-card">
+    <a href="login.html" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      กลับไปหน้าเข้าสู่ระบบ
+    </a>
+    <div class="steps">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+    <div class="alert-banner" id="alertBanner"></div>
+    <div id="step1">
+      <h2 class="card-title">ลืมรหัสผ่าน?</h2>
+      <p style="text-align:center;font-size:14px;color:var(--text-secondary);margin-bottom:24px;font-weight:300;">กรอกรหัสนิสิตเพื่อยืนยันตัวตน</p>
+      <div class="input-group">
+        <label class="input-label">รหัสนิสิต</label>
+        <input type="text" id="verify_student_id" class="input-field" placeholder="ตัวอย่าง 6401234567" onkeydown="if(event.key==='Enter')verifyStudent()">
+      </div>
+      <button class="btn-primary" id="btnVerify" onclick="verifyStudent()" style="margin-top:6px;">ยืนยันตัวตน</button>
+    </div>
+    <div id="step2" style="display:none;">
+      <h2 class="card-title">ตั้งรหัสผ่านใหม่</h2>
+      <p style="text-align:center;font-size:14px;color:var(--text-secondary);margin-bottom:24px;font-weight:300;">กรอกรหัสผ่านใหม่ที่ต้องการ</p>
+      <div class="input-group">
+        <label class="input-label">รหัสผ่านใหม่</label>
+        <input type="password" id="new_password" class="input-field" placeholder="ความยาวอย่างน้อย 8 ตัวอักษร">
+      </div>
+      <div class="input-group" style="margin-bottom:22px;">
+        <label class="input-label">ยืนยันรหัสผ่านใหม่</label>
+        <input type="password" id="confirm_password" class="input-field" placeholder="กรอกรหัสผ่านอีกครั้ง" onkeydown="if(event.key==='Enter')resetPassword()">
+      </div>
+      <button class="btn-primary" id="btnReset" onclick="resetPassword()">เปลี่ยนรหัสผ่าน</button>
+    </div>
+    <div id="step3" style="display:none;text-align:center;padding:12px 0;">
+      <div style="font-size:44px;margin-bottom:14px;">✅</div>
+      <h2 style="font-size:18px;font-weight:600;margin-bottom:8px;">เปลี่ยนรหัสผ่านสำเร็จ</h2>
+      <p style="font-size:14px;color:var(--text-secondary);font-weight:300;margin-bottom:24px;">ใช้รหัสผ่านใหม่เพื่อเข้าสู่ระบบได้เลย</p>
+      <a href="login.html" class="btn-primary" style="text-decoration:none;display:flex;justify-content:center;">ไปหน้าเข้าสู่ระบบ</a>
+    </div>
+  </div>
+  <script>
+    const API = 'http://localhost:8000';
+    let verifiedStudentId = '';
+
+    function showAlert(msg, type) {
+      const b = document.getElementById('alertBanner');
+      const icon = type === 'error'
+        ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+        : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+      b.className = `alert-banner ${type}`;
+      b.innerHTML = `${icon}<span>${msg}</span>`;
+    }
+    function hideAlert() {
+      const b = document.getElementById('alertBanner');
+      b.className = 'alert-banner'; b.innerHTML = '';
+    }
+    function setStep(n) {
+      for (let i = 1; i <= 3; i++) {
+        const d = document.getElementById(`dot${i}`);
+        d.className = 'step-dot' + (i < n ? ' done' : i === n ? ' active' : '');
+      }
+      document.getElementById('step1').style.display = n === 1 ? 'block' : 'none';
+      document.getElementById('step2').style.display = n === 2 ? 'block' : 'none';
+      document.getElementById('step3').style.display = n === 3 ? 'block' : 'none';
+      hideAlert();
+    }
+    async function verifyStudent() {
+      const studentId = document.getElementById('verify_student_id').value.trim();
+      if (!studentId) { showAlert('โปรดกรอกรหัสนิสิต', 'error'); return; }
+      const btn = document.getElementById('btnVerify');
+      btn.disabled = true; btn.textContent = 'กำลังตรวจสอบ...';
+      hideAlert();
+      try {
+        const res    = await fetch(`${API}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ student_id: studentId, password: '___VERIFY___' })
+        });
+        const result = await res.json();
+        if (result.message && result.message.includes('ไม่พบรหัสนิสิต')) {
+          showAlert('ไม่พบรหัสนิสิตนี้ในระบบ', 'error');
+          btn.disabled = false; btn.textContent = 'ยืนยันตัวตน';
+          return;
+        }
+        verifiedStudentId = studentId;
+        setStep(2);
+      } catch (err) {
+        showAlert('เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อ Server ได้', 'error');
+        btn.disabled = false; btn.textContent = 'ยืนยันตัวตน';
+      }
+    }
+    async function resetPassword() {
+      const newPass     = document.getElementById('new_password').value;
+      const confirmPass = document.getElementById('confirm_password').value;
+      if (!newPass || !confirmPass) { showAlert('โปรดกรอกรหัสผ่านให้ครบถ้วน', 'error'); return; }
+      if (newPass.length < 8)       { showAlert('รหัสผ่านต้องมีความยาวอย่างน้อย 8 ตัวอักษร', 'error'); return; }
+      if (newPass !== confirmPass)   { showAlert('รหัสผ่านไม่ตรงกัน โปรดกรอกใหม่', 'error'); return; }
+      const btn = document.getElementById('btnReset');
+      btn.disabled = true; btn.textContent = 'กำลังบันทึก...';
+      hideAlert();
+      try {
+        const res    = await fetch(`${API}/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ student_id: verifiedStudentId, password: newPass })
+        });
+        const result = await res.json();
+        if (!res.ok) {
+          showAlert(result.message || 'เปลี่ยนรหัสผ่านไม่สำเร็จ', 'error');
+          btn.disabled = false; btn.textContent = 'เปลี่ยนรหัสผ่าน';
+          return;
+        }
+        setStep(3);
+      } catch (err) {
+        showAlert('เกิดข้อผิดพลาด ไม่สามารถเชื่อมต่อ Server ได้', 'error');
+        btn.disabled = false; btn.textContent = 'เปลี่ยนรหัสผ่าน';
+      }
+    }
+  </script>
+</body>
+</html>

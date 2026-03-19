@@ -1,73 +1,82 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>สร้างกิจกรรม</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สร้างกิจกรรม | UniSports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<nav>
-    <a href="index.html" class="logo">🏆 <span>UniSports</span></a>
-    <div class="nav-right">
-        <a href="index.html">หน้าแรก</a>
-        <a href="profile.html" id="navUser" style="color:#FFD700; font-size:14px; font-weight:600; text-decoration:none; margin-left:24px;"></a>
-        <button class="btn-logout" id="navLogout" onclick="logout()" style="display:none">ออกจากระบบ</button>
-        <a href="login.html" id="navLogin">เข้าสู่ระบบ</a>
-    </div>
-</nav>
 
-<div class="container" style="max-width:680px; margin-top:40px;">
-    <div class="form-card">
-        <div class="form-header">
-            <h2>➕ สร้างกิจกรรมใหม่</h2>
-            <p>กรอกข้อมูลกิจกรรมกีฬาที่ต้องการจัดให้ครบถ้วน</p>
-        </div>
-        <div class="form-body">
-            <div class="alert" id="alert"></div>
-            <div class="form-group">
-                <label>ชื่อกิจกรรม <span>*</span></label>
-                <input type="text" id="title" placeholder="เช่น การแข่งขันฟุตบอล 7 คน">
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>ประเภทกีฬา <span>*</span></label>
-                    <select id="sport_type">
-                        <option value="">-- เลือกประเภทกีฬา --</option>
-                        <option>ฟุตบอล</option>
-                        <option>บาสเกตบอล</option>
-                        <option>วอลเลย์บอล</option>
-                        <option>แบดมินตัน</option>
-                        <option>เทนนิส</option>
-                        <option>ว่ายน้ำ</option>
-                        <option>วิ่ง</option>
-                        <option>อื่นๆ</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>วันที่จัดกิจกรรม <span>*</span></label>
-                    <input type="date" id="event_date">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>สถานที่ <span>*</span></label>
-                    <input type="text" id="location" placeholder="เช่น สนามกีฬากลาง">
-                </div>
-                <div class="form-group">
-                    <label>จำนวนรับสูงสุด <span>*</span></label>
-                    <input type="number" id="max_participants" placeholder="เช่น 20" min="1">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>รายละเอียดเพิ่มเติม</label>
-                <textarea id="description" placeholder="อธิบายรายละเอียดกิจกรรม..."></textarea>
-            </div>
-            <button class="btn-submit" onclick="createEvent()">🏆 สร้างกิจกรรม</button>
-        </div>
+  <!-- ── Navbar ─────────────────────────────────────────────── -->
+  <nav>
+    <a href="index.html" class="logo">UniSports.</a>
+    <div class="nav-actions">
+      <a href="index.html" class="nav-link">หน้าแรก</a>
+      <a href="profile.html" class="user-avatar hidden" id="navUser" title="โปรไฟล์"></a>
+      <button class="btn-logout hidden" id="btnLogout" onclick="logout()">ออกจากระบบ</button>
+      <a href="login.html" class="nav-link" id="btnLogin">เข้าสู่ระบบ</a>
     </div>
-</div>
-<script src="js/create.js"></script>
+  </nav>
+
+  <!-- ── Form ───────────────────────────────────────────────── -->
+  <div class="page-form">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>สร้างกิจกรรมใหม่</h2>
+        <p>กรอกข้อมูลกิจกรรมกีฬาที่ต้องการจัดให้ครบถ้วน</p>
+      </div>
+      <div class="form-body">
+        <div class="form-alert" id="formAlert"></div>
+
+        <div class="form-group">
+          <label>ชื่อกิจกรรม <span class="req">*</span></label>
+          <input type="text" id="title" placeholder="เช่น การแข่งขันฟุตบอล 7 คน">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>ประเภทกีฬา <span class="req">*</span></label>
+            <select id="sport_type">
+              <option value="">-- เลือกประเภทกีฬา --</option>
+              <option>ฟุตบอล</option>
+              <option>บาสเกตบอล</option>
+              <option>วอลเลย์บอล</option>
+              <option>แบดมินตัน</option>
+              <option>เทนนิส</option>
+              <option>ว่ายน้ำ</option>
+              <option>วิ่ง</option>
+              <option>อื่นๆ</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>วันที่จัดกิจกรรม <span class="req">*</span></label>
+            <input type="date" id="event_date">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>สถานที่ <span class="req">*</span></label>
+            <input type="text" id="location" placeholder="เช่น สนามกีฬากลาง">
+          </div>
+          <div class="form-group">
+            <label>จำนวนรับสูงสุด <span class="req">*</span></label>
+            <input type="number" id="max_participants" placeholder="เช่น 20" min="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>รายละเอียดเพิ่มเติม</label>
+          <textarea id="description" placeholder="อธิบายรายละเอียดกิจกรรม..."></textarea>
+        </div>
+
+        <button class="btn-submit" onclick="submitCreateEvent()">สร้างกิจกรรม</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/create.js"></script>
 </body>
 </html>

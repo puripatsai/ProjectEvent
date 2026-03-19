@@ -1,68 +1,70 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniSports</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniSports — ระบบจัดการกิจกรรมกีฬา</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<nav>
-    <a href="index.html" class="logo">🏆UniSports <span></span></a>
-    <div class="nav-right">
-        <div class="dropdown" id="sportDropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown()" id="dropdownBtn">
-                <span id="selectedSport">⚽ ประเภทกีฬา</span>
-                <span class="arrow">▼</span>
-            </button>
-            <div class="dropdown-menu" id="dropdownMenu">
-                <button class="dropdown-item active" onclick="selectSport('', '⚽ ประเภทกีฬา', this)">🏅 ทั้งหมด</button>
-                <div class="dropdown-divider"></div>
-                <button class="dropdown-item" onclick="selectSport('ฟุตบอล', '⚽ ฟุตบอล', this)">⚽ ฟุตบอล</button>
-                <button class="dropdown-item" onclick="selectSport('บาสเกตบอล', '🏀 บาสเกตบอล', this)">🏀 บาสเกตบอล</button>
-                <button class="dropdown-item" onclick="selectSport('วอลเลย์บอล', '🏐 วอลเลย์บอล', this)">🏐 วอลเลย์บอล</button>
-                <button class="dropdown-item" onclick="selectSport('แบดมินตัน', '🏸 แบดมินตัน', this)">🏸 แบดมินตัน</button>
-                <button class="dropdown-item" onclick="selectSport('เทนนิส', '🎾 เทนนิส', this)">🎾 เทนนิส</button>
-                <button class="dropdown-item" onclick="selectSport('ว่ายน้ำ', '🏊 ว่ายน้ำ', this)">🏊 ว่ายน้ำ</button>
-                <button class="dropdown-item" onclick="selectSport('วิ่ง', '🏃 วิ่ง', this)">🏃 วิ่ง</button>
-                <button class="dropdown-item" onclick="selectSport('อื่นๆ', '🎯 อื่นๆ', this)">🎯 อื่นๆ</button>
-            </div>
-        </div>
-        <a href="profile.html" id="navUser" style="color:#FFD700; font-size:14px; font-weight:600; text-decoration:none; margin-left:24px;"></a>
-        <button class="btn-logout" id="navLogout" onclick="logout()" style="display:none">ออกจากระบบ</button>
-        <a href="login.html" id="navLogin">เข้าสู่ระบบ</a>
+
+  <!-- ── Navbar ─────────────────────────────────────────────── -->
+  <nav>
+    <a href="index.html" class="logo">UniSports.</a>
+    <div class="nav-actions">
+      <!-- ปุ่มสร้างกิจกรรม (เห็นเฉพาะ admin) -->
+      <a href="create.html" class="nav-link hidden" id="btnCreate">+ สร้างกิจกรรม</a>
+      <!-- avatar → profile -->
+      <a href="profile.html" class="user-avatar hidden" id="navUser" title="โปรไฟล์"></a>
+      <!-- logout -->
+      <button class="btn-logout hidden" id="btnLogout" onclick="logout()">ออกจากระบบ</button>
+      <!-- login link (ถ้ายังไม่ login) -->
+      <a href="login.html" class="nav-link" id="btnLogin">เข้าสู่ระบบ</a>
     </div>
-</nav>
+  </nav>
 
-<div class="hero">
-    <h1>🏅 ระบบจัดการกิจกรรมกีฬามหาวิทยาลัย</h1>
-    <p>ค้นหาและลงทะเบียนเข้าร่วมกิจกรรมกีฬาที่คุณสนใจ</p>
-    <a href="create.html" class="btn-primary" id="btnCreate" style="display:none">+ สร้างกิจกรรมใหม่</a>
-</div>
+  <!-- ── Hero ───────────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="hero-badge">ระบบจัดการกิจกรรมกีฬา มหาวิทยาลัยเกษตรศาสตร์ กำแพงแสน</div>
+    <h1>จองสนาม หาเพื่อนเล่น<br>ครบจบในที่เดียว</h1>
+    <p>ค้นหาและลงทะเบียนเข้าร่วมกิจกรรมกีฬาในมหาวิทยาลัย ออกแบบมาเพื่อความเรียบง่ายและใช้งานสะดวก</p>
+  </header>
 
-<div class="filter-bar">
-    <span class="filter-label">สถานะ:</span>
-    <button class="filter-chip active" onclick="filterStatus('all', this)">ทั้งหมด</button>
-    <button class="filter-chip" onclick="filterStatus('open', this)">🟢 เปิดรับ</button>
-    <button class="filter-chip" onclick="filterStatus('almost', this)">🟡 ใกล้เต็ม</button>
-    <button class="filter-chip" onclick="filterStatus('full', this)">🔴 เต็มแล้ว</button>
-    <div class="search-wrap">
-        <span class="search-icon">🔍</span>
+  <!-- ── Sticky Filter Bar ──────────────────────────────────── -->
+  <div class="filter-wrapper">
+    <div class="filter-container">
+      <!-- Sport filter pills (ไม่มี status) -->
+      <div class="scrollable-pills">
+        <button class="pill-btn active" onclick="setStatus('all',         this)">ทั้งหมด</button>
+        <button class="pill-btn" onclick="setStatus('ฟุตบอล',     this)">ฟุตบอล</button>
+        <button class="pill-btn" onclick="setStatus('บาสเกตบอล',  this)">บาสเกตบอล</button>
+        <button class="pill-btn" onclick="setStatus('วอลเลย์บอล', this)">วอลเลย์บอล</button>
+        <button class="pill-btn" onclick="setStatus('แบดมินตัน',  this)">แบดมินตัน</button>
+        <button class="pill-btn" onclick="setStatus('เทนนิส',     this)">เทนนิส</button>
+        <button class="pill-btn" onclick="setStatus('ว่ายน้ำ',    this)">ว่ายน้ำ</button>
+        <button class="pill-btn" onclick="setStatus('วิ่ง',       this)">วิ่ง</button>
+        <button class="pill-btn" onclick="setStatus('อื่นๆ',      this)">อื่นๆ</button>
+      </div>
+      <!-- Search -->
+      <div class="search-container">
+        <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
         <input type="text" id="searchInput" placeholder="ค้นหากิจกรรม..." oninput="renderCards()">
+      </div>
     </div>
-</div>
+  </div>
 
-<div class="container">
-    <div class="section-header">
-        <div class="section-title">📅 กิจกรรมทั้งหมด</div>
-        <div class="result-count" id="resultCount"></div>
+  <!-- ── Event Grid ──────────────────────────────────────────── -->
+  <section class="content-section">
+    <div class="grid-header">
+      <span class="grid-title" id="gridTitle">กิจกรรมทั้งหมด</span>
+      <span class="result-count" id="resultCount"></span>
     </div>
-    <div class="cards" id="eventList">
-        <div class="loading">กำลังโหลด...</div>
-    </div>
-</div>
+    <div class="bento-grid" id="eventGrid"></div>
+  </section>
 
-<script src="js/index.js"></script>
+  <script src="js/index.js"></script>
 </body>
 </html>
