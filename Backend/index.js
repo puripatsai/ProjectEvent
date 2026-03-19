@@ -231,6 +231,28 @@ app.post('/login', async (req, res) => {
     }
 });
 
+// ========== RESET PASSWORD ==========
+
+app.post('/reset-password', async (req, res) => {
+    try {
+        const { student_id, password } = req.body;
+        if (!student_id || !password) {
+            return res.status(400).json({ message: 'ข้อมูลไม่ครบ' });
+        }
+        // เช็คว่ามีรหัสนิสิตนี้จริง
+        const [rows] = await conn.query('SELECT id FROM users WHERE student_id = ?', [student_id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'ไม่พบรหัสนิสิตนี้' });
+        }
+        // hash password ใหม่แล้ว update
+        const hashed = await bcrypt.hash(password, 10);
+        await conn.query('UPDATE users SET password = ? WHERE student_id = ?', [hashed, student_id]);
+        res.json({ message: 'เปลี่ยนรหัสผ่านสำเร็จ' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error', error: error.message });
+    }
+});
+
 // ========== START ==========
 
 app.listen(port, async () => {
